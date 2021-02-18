@@ -8,6 +8,21 @@ library(ussf)
 
 
 CZ_characteristics <- read_csv("table8.csv")
+CZ_quintiles <- read_csv("table6.csv")
+CZ_map <- boundaries(geography = "cz", projection = "albers")
+CZ_geom <- CZ_map[[4]]
+CZ_quintiles$geom = CZ_geom
+
+#make sure they all have the same order and CZs
+cz1 <- CZ_characteristics[[1]]
+cz2 <- CZ_quintiles[[1]]
+cz3 <- as.numeric(CZ_map[[1]])
+identical(cz1, cz2, cz3)
+
+
+
+
+
 char_NA <- CZ_characteristics[rowSums(is.na(CZ_characteristics)) > 0,]
 race_seg <- CZ_characteristics$`Racial Segregation`
 crime_rate <- CZ_characteristics$`Violent Crime Rate`
@@ -17,16 +32,6 @@ mig_in <- CZ_characteristics$`Migration Inflow Rate`
 mig_out <- CZ_characteristics$`Migration Outlflow Rate`
 
 
-
-
-CZ_quintiles <- read_csv("table6.csv")
-head(CZ_quintiles)
-CZ_quintiles[[5]] #p (child q1 | par q1)
-CZ_map <- boundaries(geography = "cz", projection = "albers")
-CZ_geom <- CZ_map[[4]]
-
-
-CZ_quintiles$geom = CZ_geom
 CZ_quintiles$race_seg = race_seg
 CZ_quintiles$`Violent Crime Rate` = crime_rate
 CZ_quintiles$`School Expenditure per Student` = school_expenditure
@@ -38,10 +43,10 @@ CZ_quintiles$`Migration Outflow Rate` = mig_out
 #(26202, 26204, 26405, 26804, 27604, 28303, 29002, 30907, 34101, 34104, 34306, 34604)
 #CZ_quintiles <- CZ_quintiles[rowSums(is.na(CZ_quintiles)) == 0,]
 
-
 #this weird tibble thing works...
 test <- st_as_sf(CZ_quintiles)
 test <- as_tibble(test)
+
 
 
 
@@ -104,8 +109,6 @@ ggplot(data = test$geom, aes(geometry = geometry)) +
 ggplot(data = test$geom, aes(geometry = geometry)) +
   geom_sf(aes(fill = test$`P(Child q5 |Par q1)`)) +
   scale_fill_gradientn(colors = rainbow(5))
-
-
 
 
 
