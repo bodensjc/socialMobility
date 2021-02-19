@@ -82,6 +82,7 @@ transitions_only = transitions_only*pctPeople
 matrix_data <- colSums(transitions_only, na.rm = TRUE, dims = 1)
 total_transition_matrix <- t(matrix(matrix_data, nrow = 5, ncol = 5))#transpose to get parent as rows and child as columns
 total_transition_matrix
+t(total_transition_matrix)
 
 total_transition_matrix %*% total_transition_matrix
 total_transition_matrix %^% 3
