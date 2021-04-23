@@ -8,8 +8,8 @@ library(expm)
 
 
 
-CZ_characteristics <- read_csv("table8.csv")
-CZ_quintiles <- read_csv("table6.csv")
+CZ_characteristics <- read_csv("data/table8.csv")
+CZ_quintiles <- read_csv("data/table6.csv")
 CZ_map <- boundaries(geography = "cz", projection = "albers")
 CZ_geom <- CZ_map[[4]]
 CZ_quintiles$geom = CZ_geom
@@ -70,6 +70,17 @@ kq2pq5 <- CZ_quintiles$`P(Child q2 |Par q5)`*CZ_quintiles$`P(Par q5)`
 kq3pq5 <- CZ_quintiles$`P(Child q3 |Par q5)`*CZ_quintiles$`P(Par q5)`
 kq4pq5 <- CZ_quintiles$`P(Child q4 |Par q5)`*CZ_quintiles$`P(Par q5)`
 kq5pq5 <- CZ_quintiles$`P(Child q5 |Par q5)`*CZ_quintiles$`P(Par q5)`
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -182,6 +193,63 @@ ggplot(data = test$geom, aes(geometry = geometry)) +
 ggplot(data = test$geom, aes(geometry = geometry)) +
   geom_sf(aes(fill = test$`P(Child q5 |Par q1)`)) +
   scale_fill_gradientn(colors = rainbow(5))
+
+
+
+
+kq1 = kq1pq1+kq1pq2+kq1pq3+kq1pq4+kq1pq5
+kq2 = kq2pq1+kq2pq2+kq2pq3+kq2pq4+kq2pq5
+kq3 = kq3pq1+kq3pq2+kq3pq3+kq3pq4+kq3pq5
+kq4 = kq4pq1+kq4pq2+kq4pq3+kq4pq4+kq4pq5
+kq5 = kq5pq1+kq5pq2+kq5pq3+kq5pq4+kq5pq5
+
+pq1 = kq1pq1+kq2pq1+kq3pq1+kq4pq1+kq5pq1
+pq2 = kq1pq2+kq2pq2+kq3pq2+kq4pq2+kq5pq2
+pq3 = kq1pq3+kq2pq3+kq3pq3+kq4pq3+kq5pq3
+pq4 = kq1pq4+kq2pq4+kq3pq4+kq4pq4+kq5pq4
+pq5 = kq1pq5+kq2pq5+kq3pq5+kq4pq5+kq5pq5
+
+
+
+
+
+#looking for outlier initial distributions
+largestpq5 <- which.max(pq5)
+bestVector <- c(pq1[largestpq5],pq2[largestpq5],pq3[largestpq5],pq4[largestpq5],pq5[largestpq5])
+bestVector
+pq5maxVec <- rep(0, 741)
+pq5maxVec[largestpq5] = 1
+ggplot(data = test$geom, aes(geometry = geometry)) +
+  geom_sf(aes(fill = pq5maxVec)) +
+  scale_fill_gradientn(colors = c("white", "black"))
+
+largestpq1 <- which.max(pq1)
+worstVector <- c(pq1[largestpq1],pq2[largestpq1],pq3[largestpq1],pq4[largestpq1],pq5[largestpq1])
+worstVector
+pq1maxVec <- rep(0, 741)
+pq1maxVec[largestpq1] = 1
+ggplot(data = test$geom, aes(geometry = geometry)) +
+  geom_sf(aes(fill = pq1maxVec)) +
+  scale_fill_gradientn(colors = c("white", "black"))
+CZ_map$place[largestpq1]
+CZ_map$state[largestpq1]
+
+
+
+
+#plotting the best place for landing in 5th quintile
+bestCZ <- which.max(kq5)#gives the CZ tag for location with highest prob of kids entering 5th quintile
+worstCZ <- which.min(kq5)
+kq5test <- rep(0, 741)
+kq5test2 <- kq5test
+kq5test[bestCZ] = 1
+kq5test2[worstCZ] = 1
+ggplot(data = test$geom, aes(geometry = geometry)) +
+  geom_sf(aes(fill = kq5test)) +
+  scale_fill_gradientn(colors = c("white", "black"))
+ggplot(data = test$geom, aes(geometry = geometry)) +
+  geom_sf(aes(fill = kq5test2)) +
+  scale_fill_gradientn(colors = c("white", "black"))
 
 
 
